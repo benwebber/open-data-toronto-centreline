@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -eux -o pipefail
+
+./bin/fetch
+git add data
+if git diff --quiet; then
+  exit
+fi
+date="$(TZ=America/Toronto date +'%Y-%m-%d')"
+version="${date//-/.}"
+git config user.name 'github-actions[bot]'
+git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+TZ=utc git commit -m "Fetch data for ${date}"
+git tag "v${version}"
+git push

@@ -1,0 +1,16 @@
+---
+name: Fetch latest data
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 3 * * *'
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Fetch latest data
+        run: |-
+          ./bin/ci-cron

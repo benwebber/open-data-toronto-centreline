@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -eux o pipefail
+IFS=$'\n\t'
+
+TEMP="$(mktemp)"
+URL='https://ckan0.cf.opendata.inter.prod-toronto.ca/dataset/1d079757-377b-4564-82df-eb5638583bfb/resource/7bc94ccf-7bcf-4a7d-88b1-bdfc8ec5aaf1/download/Centreline%20-%20Version%202%20-%204326.geojson'
+
+main() {
+  curl -o "${TEMP}" "${URL}"
+  mkdir -p data
+  jq -c '.features | sort_by(.properties.CENTRELINE_ID) | .[]' "${TEMP}" \
+    | split --additional-suffix=.geojson --lines=1000 --numeric-suffix --suffix-length=3 - data/features.
+}
+
+cleanup() {
+  rm -f "${TEMP}"
+}
+
+trap cleanup EXIT
+main "${@}"
