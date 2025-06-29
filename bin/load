@@ -1,0 +1,45 @@
+#!/usr/bin/env python3
+import argparse
+import json
+import sqlite3
+import sys
+from contextlib import closing
+from pathlib import Path
+
+
+def main(args: list[str]) -> None:
+    args_ = parse_args(args)
+    db = sqlite3.Connection(args_.db)
+    with closing(db):
+        load(db, args_.dir)
+
+
+def parse_args(args: list[str]) -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument('db', type=Path)
+    parser.add_argument('dir', type=Path)
+    return parser.parse_args(args)
+
+
+def load(db: sqlite3.Connection, dir: Path) -> None:
+    sql = 'INSERT OR REPLACE INTO feature (centreline_id, geojson) VALUES (:centreline_id, json(:geojson))'
+    filenames = dir.glob('*.geojson')
+    for filename in filenames:
+        records = []
+        with filename.open() as f:
+            for line in f:
+                data = json.loads(line)
+                properties = data['properties']
+                record = {
+                    'centreline_id': properties['CENTRELINE_ID'],
+                    'geojson': line,
+                }
+                records.append(record)
+        with db:
+            db.executemany(sql, records)
+    with db:
+        db.execute('INSERT INTO feature_fts (rowid, name_full, name_full_legal) SELECT rowid, name_full, name_full_legal FROM feature')
+
+
+if __name__ == '__main__':
+    main(sys.argv[1:])

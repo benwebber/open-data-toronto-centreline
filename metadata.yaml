@@ -1,0 +1,11 @@
+---
+title: Toronto Centreline
+description: >
+  The Toronto Centreline is a data set of linear features representing streets, walkways, rivers, railways, highways and administrative boundaries within the City of Toronto.
+  Each line segment is described with a series of attributes including a unique identifier, name, feature code, and address ranges (where applicable).
+  In addition to retaining historical archives, threaded archives are also retained that record splits and merges of address points, of linear features and of area features.
+  All features are linked and integrated.
+license: Open Government Licence - Toronto
+license_url: https://open.toronto.ca/open-data-licence/
+source: Toronto Centreline (TCL) - City of Toronto Open Data Portal
+source_url: https://open.toronto.ca/dataset/toronto-centreline-tcl/
