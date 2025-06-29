@@ -1,0 +1,7 @@
+[project]
+name = "open-data-toronto-centreline"
+dynamic = ["version"]
+dependencies = [
+  "datasette",
+  "datasette-geojson-map",
+]

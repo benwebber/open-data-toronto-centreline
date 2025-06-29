@@ -10,6 +10,9 @@ centreline.db.gz: centreline.db
 SHA256SUMS: centreline.db.gz
 	sha256sum $< >SHA256SUMS
 
+requirements.txt: pyproject.toml
+	uv pip compile $< >$@
+
 .PHONY: clean
 clean:
 	$(RM) centreline.db
