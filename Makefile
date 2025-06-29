@@ -5,7 +5,10 @@ centreline.db: $(DATA)
 	./bin/load $@ data/
 
 centreline.db.gz: centreline.db
-	gzip --keep $<
+	gzip --force --keep $<
+
+SHA256SUMS: centreline.db.gz
+	sha256sum $< >SHA256SUMS
 
 .PHONY: clean
 clean:
