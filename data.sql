@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS data (
+  centreline_id TEXT PRIMARY KEY NOT NULL,
+  geojson TEXT NOT NULL
+);
