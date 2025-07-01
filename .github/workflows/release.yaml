@@ -1,5 +1,4 @@
----
-name: Publish database
+name: Release
 on:
   workflow_dispatch:
   push:
@@ -17,20 +16,12 @@ jobs:
           fetch-depth: 0
       - name: Make database
         run: |-
-          make centreline.db.gz
-          make SHA256SUMS
+          make
       - name: Publish database
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: centreline.db.gz
-          tag: ${{ github.ref }}
-          overwrite: true
-      - name: Publish checksums
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: SHA256SUMS
+          file_glob: dist/*
           tag: ${{ github.ref }}
           overwrite: true
       - name: Log into container registry

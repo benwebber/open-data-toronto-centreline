@@ -1,0 +1,7 @@
+_commit: v0.1.0
+_src_path: git@github.com:benwebber/open-data-toronto-copier.git
+name: Toronto Centreline
+project: open-data-toronto-centreline
+repo: benwebber/open-data-toronto-centreline
+slug: centreline
+url: https://open.toronto.ca/dataset/toronto-centreline-tcl/

@@ -1,20 +1,30 @@
 DATA := $(shell find data -type f)
+DB := centreline.db
 
-centreline.db: data.db centreline.sql
-	sqlite3 $@ -cmd "ATTACH 'data.db' AS data" <centreline.sql
+.DEFAULT_GOAL := dist
 
-centreline.db.gz: centreline.db
-	gzip --force --keep $<
+$(DB): data.db sql/centreline.sql
+	sqlite3 $@ -cmd "ATTACH 'data.db' AS data" <sql/centreline.sql
 
-data.db: data.sql $(DATA)
-	./bin/load $@ $< data/
+data.db: sql/data.sql $(DATA)
+	./bin/load $@ sql/data.sql data/
 
-SHA256SUMS: centreline.db.gz
-	sha256sum $< >SHA256SUMS
+%.gz: $(DB)
+	gzip --force --keep $< >$@
 
-requirements.txt: pyproject.toml
-	uv pip compile $< >$@
+SHA256SUMS: $(DB).gz
+	sha256sum *.gz >$@
 
 .PHONY: clean
 clean:
-	$(RM) centreline.db
+	$(RM) -r $(DB) dist/
+
+.PHONY: dist
+dist:
+	mkdir -p dist
+	make dist/$(DB).gz
+	cd dist && sha256sum *.gz >SHA256SUMS
+
+.PHONY: fetch
+fetch:
+	./bin/fetch
