@@ -9,7 +9,7 @@ main() {
   curl -o "${TEMP}" "${URL}"
   mkdir -p data
   jq -c '.features | sort_by(.properties.CENTRELINE_ID) | .[]' "${TEMP}" \
-    | split --additional-suffix=.geojson --lines=1000 --numeric-suffix --suffix-length=3 - data/features.
+    | split --additional-suffix=.geojsonl --lines=1000 --numeric-suffix --suffix-length=3 - data/features.
 }
 
 cleanup() {

@@ -2,6 +2,6 @@
 set -eux -o pipefail
 
 sqlite3 "${1:?db}" <"${2:?sql}"
-cat "${3:?dir}"/*.geojson \
+cat "${3:?dir}"/*.geojsonl \
   | jq --raw-output '[ .properties.CENTRELINE_ID, (. | tostring)] | @csv' - \
   | sqlite3 "${1}" -csv -cmd '.import /dev/stdin data'
