@@ -9,6 +9,7 @@ license: Open Government Licence - Toronto
 license_url: https://open.toronto.ca/open-data-licence/
 source: Toronto Centreline (TCL) - City of Toronto Open Data Portal
 source_url: https://open.toronto.ca/dataset/toronto-centreline-tcl/
+about_url: https://github.com/benwebber/open-data-toronto-centreline/
 databases:
   centreline:
     tables:
