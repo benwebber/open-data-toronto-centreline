@@ -1,1 +1,4 @@
-data/
+*
+!centreline.db
+!metadata.yaml
+!requirements.txt
