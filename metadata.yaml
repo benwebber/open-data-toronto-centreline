@@ -9,3 +9,119 @@ license: Open Government Licence - Toronto
 license_url: https://open.toronto.ca/open-data-licence/
 source: Toronto Centreline (TCL) - City of Toronto Open Data Portal
 source_url: https://open.toronto.ca/dataset/toronto-centreline-tcl/
+databases:
+  centreline:
+    tables:
+      feature:
+        description: The set of all named features in the Centreline data set.
+      segment:
+        description: A segment of a linear feature.
+      point:
+        description: A point on a linear feature.
+    queries:
+      # iif: https://github.com/simonw/datasette/issues/1258
+      find-segment-with-address:
+        title: Find the segment containing an address
+        sql: |-
+          SELECT
+            segment.*
+          FROM
+            segment
+          JOIN
+            feature
+          ON
+            segment.feature_id = feature.id
+          WHERE
+            feature.id IN (
+              SELECT
+                id
+              FROM
+                feature
+              JOIN
+                feature_fts
+              ON
+                feature.rowid = feature_fts.rowid
+              WHERE
+                feature_fts MATCH escape_fts(iif(:name == '', '*', :name))
+            )
+            AND cast(:number AS INTEGER) BETWEEN min(segment.num_odd_low, segment.num_even_low) AND max(segment.num_even_low, segment.num_even_high)
+      find-feature-by-name-or-id:
+        title: Find a feature by name or ID
+        sql: |-
+          SELECT
+            feature.*,
+            json_object(
+              'type', 'MultiLineString',
+              'coordinates', json_group_array(json(segment.geometry->>'$.coordinates[0]'))
+            ) AS geometry
+          FROM
+            feature
+          JOIN
+            segment
+          ON
+            feature.id = segment.feature_id
+          WHERE
+            feature.id IN (
+              SELECT
+                id
+              FROM
+                feature
+              JOIN
+                feature_fts
+              ON
+                feature.rowid = feature_fts.rowid
+              WHERE
+                feature_fts MATCH escape_fts(iif(:name == '', '*', :name))
+            )
+            OR feature.id = :id
+          GROUP BY
+            feature.id
+      find-intersection-by-name:
+        title: Find where two features intersect by name
+        sql: |-
+          SELECT DISTINCT
+            f1.id as feature1_id,
+            f2.id AS feature2_id,
+            f1.name_full as feature1_name_full,
+            f2.name_full as feature2_name_full,
+            f1.name_full || ' at ' || f2.name_full as description,
+            p1.intersection_id,
+            p1.geometry
+          FROM
+            point p1
+          JOIN
+            point p2
+          ON
+            p1.intersection_id = p2.intersection_id
+          JOIN (
+            SELECT
+              feature.*
+            FROM
+              feature
+            JOIN
+              feature_fts
+            ON
+              feature.rowid = feature_fts.rowid
+            WHERE
+              feature_fts MATCH escape_fts(iif(:name1 == '', '*', :name1))
+          ) f1
+          ON
+            p1.feature_id = f1.id
+          JOIN (
+            SELECT
+              feature.*
+            FROM
+              feature
+            JOIN
+              feature_fts
+            ON
+              feature.rowid = feature_fts.rowid
+            WHERE
+              feature_fts MATCH escape_fts(iif(:name2 == '', '*', :name2))
+          ) f2
+          ON
+            p2.feature_id = f2.id
+          WHERE
+            p1.feature_id != p2.feature_id
+            AND p1.feature_id = f1.id
+            AND p2.feature_id = f2.id
