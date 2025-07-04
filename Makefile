@@ -10,7 +10,7 @@ data.db: sql/data.sql $(DATA)
 	./bin/load $@ sql/data.sql data/
 
 %.gz: $(DB)
-	gzip --force --keep $< >$@
+	gzip --force --keep --stdout $< >$@
 
 SHA256SUMS: $(DB).gz
 	sha256sum *.gz >$@

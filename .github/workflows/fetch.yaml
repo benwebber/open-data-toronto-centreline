@@ -17,6 +17,7 @@ jobs:
         run: |-
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m 'Fetch latest data' || exit
+          git add data
+          git commit -m 'Fetch latest data' || exit 0
           git tag "v$(TZ=America/Toronto date +'%Y.%m.%d')"
           git push --tags
