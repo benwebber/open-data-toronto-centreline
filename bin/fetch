@@ -8,7 +8,7 @@ URL='https://ckan0.cf.opendata.inter.prod-toronto.ca/dataset/1d079757-377b-4564-
 main() {
   curl -o "${TEMP}" "${URL}"
   mkdir -p data
-  jq -c '.features | sort_by(.properties.CENTRELINE_ID) | .[]' "${TEMP}" \
+  jq --compact-output --sort-keys '.features | sort_by(.properties.CENTRELINE_ID) | .[] | del(.properties._id)' "${TEMP}" \
     | split --additional-suffix=.geojsonl --lines=1000 --numeric-suffix --suffix-length=3 - data/features.
 }
 
